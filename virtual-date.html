@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Our Virtual Date Night 🕯️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #030108;
+      --gold: #C9A84C;
+      --rose: #B85A78;
+      --amber: #e8813a;
+      --cream: #f9f0e1;
+      --dark-rose: #8a2f4a;
+      --dark-gold: #8a6a1a;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== SETUP SCREEN ===== */
+    #setupScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(120,60,10,0.25) 0%, rgba(8,4,2,1) 70%);
+    }
+
+    #setupScreen h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.8rem, 6vw, 3.2rem);
+      color: var(--gold);
+      text-align: center;
+      text-shadow: 0 0 30px rgba(201,168,76,0.5);
+      letter-spacing: 0.02em;
+    }
+
+    #setupScreen p {
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      color: rgba(249,240,225,0.65);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .role-cards {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .role-card {
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(201,168,76,0.3);
+      border-radius: 20px;
+      padding: 2rem 2.5rem;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      text-align: center;
+      min-width: 150px;
+      backdrop-filter: blur(6px);
+    }
+
+    .role-card:hover {
+      transform: translateY(-6px) scale(1.04);
+      border-color: var(--gold);
+      box-shadow: 0 12px 40px rgba(201,168,76,0.25), 0 0 0 1px rgba(201,168,76,0.1);
+    }
+
+    .role-card.aloo-card:hover {
+      border-color: var(--rose);
+      box-shadow: 0 12px 40px rgba(184,90,120,0.3);
+    }
+
+    .role-card .emoji { font-size: 2.8rem; display: block; margin-bottom: 0.6rem; }
+    .role-card .name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.6rem;
+      color: var(--gold);
+    }
+    .role-card.aloo-card .name { color: var(--rose); }
+
+    /* ===== ROOM SCREEN ===== */
+    #roomScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 2rem;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(120,60,10,0.25) 0%, rgba(8,4,2,1) 70%);
+    }
+
+    #roomScreen h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.4rem, 5vw, 2.4rem);
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .room-code-box {
+      background: rgba(201,168,76,0.08);
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 1.2rem 2.5rem;
+      text-align: center;
+    }
+
+    .room-code {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      color: var(--gold);
+      letter-spacing: 0.3em;
+      text-shadow: 0 0 20px rgba(201,168,76,0.6);
+    }
+
+    .room-hint {
+      font-size: 0.95rem;
+      color: rgba(249,240,225,0.6);
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
+
+    .connect-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .connect-input-group label {
+      font-size: 1rem;
+      color: rgba(249,240,225,0.7);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .connect-input-group input {
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(184,90,120,0.5);
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      color: var(--cream);
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      text-align: center;
+      letter-spacing: 0.25em;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .connect-input-group input:focus { border-color: var(--rose); }
+    .connect-input-group input::placeholder { color: rgba(249,240,225,0.3); font-size: 1rem; letter-spacing: 0.05em; }
+
+    .btn-connect {
+      background: linear-gradient(135deg, var(--rose), var(--dark-rose));
+      border: none;
+      border-radius: 12px;
+      padding: 0.9rem 2rem;
+      color: white;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      width: 100%;
+    }
+
+    .btn-connect:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(184,90,120,0.4);
+    }
+
+    /* ===== WAITING ===== */
+    #waitingScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(120,60,10,0.2) 0%, rgba(8,4,2,1) 70%);
+    }
+
+    .waiting-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.3rem, 5vw, 2rem);
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .dots span {
+      display: inline-block;
+      animation: dotBounce 1.4s infinite;
+      color: var(--rose);
+      font-size: 1.5rem;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    /* ===== MAIN DATE SCENE ===== */
+    #dateScreen {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      height: 100dvh;
+      position: relative;
+    }
+
+    /* Top bar */
+    #topBar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+    }
+
+    #statusDot {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: rgba(249,240,225,0.7);
+    }
+
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+      animation: pulse 2s infinite;
+    }
+    .dot.connected { background: #22c55e; animation: none; }
+    .dot.disconnected { background: #ef4444; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .top-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: var(--gold);
+      font-size: 1.1rem;
+      padding: 0.3rem 0.55rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(201,168,76,0.15);
+      border-color: var(--gold);
+    }
+
+    /* ===== SCENE AREA ===== */
+    #sceneArea {
+      flex: 0 0 65%;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 45%, rgba(120,60,10,0.40) 0%, rgba(60,20,5,0.30) 20%, rgba(8,4,2,0.98) 60%);
+    }
+
+    /* Window with moonlight */
+    .window {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 90px;
+      border: 2px solid rgba(150,180,255,0.2);
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, rgba(120,140,200,0.08) 0%, rgba(60,80,150,0.04) 100%);
+      box-shadow: 0 0 40px rgba(120,140,220,0.08), inset 0 0 20px rgba(120,140,220,0.06);
+      overflow: hidden;
+    }
+
+    .window::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 100%;
+      background: rgba(150,180,255,0.15);
+    }
+
+    .window::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 1px;
+      background: rgba(150,180,255,0.15);
+    }
+
+    /* Stars */
+    .stars {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50%;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: rgba(255,255,240,0.7);
+      border-radius: 50%;
+      animation: twinkle var(--dur) infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 0.15; transform: scale(0.5); }
+    }
+
+    /* Floor */
+    .floor {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 30%;
+      background: linear-gradient(180deg, rgba(30,12,5,0) 0%, rgba(25,10,3,0.8) 40%, rgba(20,8,2,1) 100%);
+    }
+
+    /* Table */
+    .table-wrap {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .table-top {
+      width: clamp(160px, 35vw, 260px);
+      height: clamp(60px, 13vw, 100px);
+      background: radial-gradient(ellipse at 50% 40%, #5a3010 0%, #3a1c08 60%, #2a1205 100%);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.7), 0 0 60px rgba(200,120,30,0.15);
+      border: 1px solid rgba(150,80,20,0.3);
+    }
+
+    /* tablecloth overlay */
+    .table-top::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 35%, rgba(180,100,30,0.18) 0%, transparent 70%);
+    }
+
+    .table-leg {
+      width: clamp(30px, 7vw, 50px);
+      height: clamp(18px, 4vw, 28px);
+      background: linear-gradient(180deg, #3a1c08, #1a0a02);
+      border-radius: 0 0 8px 8px;
+    }
+
+    /* Candles */
+    .candle-group {
+      position: absolute;
+      top: -40px;
+      display: flex;
+      gap: clamp(30px, 8vw, 60px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .candle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .flame {
+      width: 10px;
+      height: 20px;
+      background: radial-gradient(ellipse at 50% 80%, #fff7e0 0%, #ffcf60 30%, #ff8c00 70%, transparent 100%);
+      border-radius: 50% 50% 30% 30%;
+      animation: flicker 1.8s infinite alternate;
+      filter: blur(0.5px);
+      position: relative;
+      box-shadow: 0 0 12px #ff9900, 0 0 24px rgba(255,150,0,0.5), 0 0 40px rgba(255,120,0,0.2);
+    }
+
+    .flame::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 8px;
+      background: rgba(255,200,50,0.6);
+      border-radius: 50%;
+      filter: blur(1px);
+    }
+
+    @keyframes flicker {
+      0% { transform: scaleX(1) scaleY(1) rotate(-2deg); }
+      25% { transform: scaleX(0.88) scaleY(1.08) rotate(1deg); }
+      50% { transform: scaleX(1.05) scaleY(0.96) rotate(-1deg); }
+      75% { transform: scaleX(0.92) scaleY(1.05) rotate(2deg); }
+      100% { transform: scaleX(1) scaleY(1) rotate(-1deg); }
+    }
+
+    .candle-body {
+      width: 10px;
+      height: clamp(22px, 5vw, 34px);
+      background: linear-gradient(90deg, #f0e8d8, #fff9f0, #e8dcc8);
+      border-radius: 3px 3px 2px 2px;
+      box-shadow: 1px 0 0 rgba(0,0,0,0.2);
+    }
+
+    .candle-base {
+      width: 14px;
+      height: 5px;
+      background: linear-gradient(90deg, #c8a070, #e8c090, #c8a070);
+      border-radius: 2px;
+    }
+
+    /* Candle glow on table */
+    .table-glow {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 50px;
+      background: radial-gradient(ellipse, rgba(255,180,50,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      animation: glowPulse 2s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+      100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+    }
+
+    /* Rose */
+    .rose {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(16px, 4vw, 22px);
+      filter: drop-shadow(0 0 6px rgba(200,80,100,0.5));
+    }
+
+    /* Plates & glasses on table */
+    .table-items {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: clamp(40px, 12vw, 90px);
+      align-items: flex-end;
+    }
+
+    .plate {
+      width: clamp(24px, 6vw, 36px);
+      height: clamp(6px, 1.5vw, 9px);
+      background: radial-gradient(ellipse, #f5f0e8 0%, #d8cfc0 70%);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .glass {
+      width: clamp(8px, 2vw, 12px);
+      height: clamp(16px, 4vw, 24px);
+      background: linear-gradient(180deg, rgba(180,220,255,0.3) 0%, rgba(150,200,240,0.15) 100%);
+      border: 1px solid rgba(200,230,255,0.3);
+      border-radius: 1px 1px 4px 4px;
+      position: relative;
+    }
+
+    .glass::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130%;
+      height: 6px;
+      background: rgba(200,230,255,0.2);
+      border-radius: 50%;
+      border: 1px solid rgba(200,230,255,0.2);
+    }
+
+    /* ===== AVATARS ===== */
+    .avatar-container {
+      position: absolute;
+      bottom: 6%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .avatar-container.alfiya { left: clamp(2%, 6vw, 10%); }
+    .avatar-container.adnan { right: clamp(2%, 6vw, 10%); }
+
+    .avatar-container svg {
+      width: clamp(80px, 16vw, 140px);
+      height: clamp(90px, 18vw, 155px);
+    }
+
+    /* ===== THOUGHT BUBBLES ===== */
+    .thought-bubble {
+      position: absolute;
+      background: rgba(252, 244, 230, 0.97);
+      color: #2a1a0a;
+      border-radius: 20px;
+      padding: 0.65rem 0.9rem;
+      max-width: clamp(120px, 30vw, 190px);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.75rem, 2.2vw, 0.92rem);
+      line-height: 1.4;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      z-index: 50;
+      animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: none;
+      word-break: break-word;
+    }
+
+    .thought-bubble .sender-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      opacity: 0.7;
+    }
+
+    .thought-bubble.from-alfiya { border: 1.5px solid rgba(184,90,120,0.4); }
+    .thought-bubble.from-alfiya .sender-label { color: var(--rose); }
+    .thought-bubble.from-adnan { border: 1.5px solid rgba(201,168,76,0.4); }
+    .thought-bubble.from-adnan .sender-label { color: var(--dark-gold); }
+
+    /* Bubble tail circles */
+    .bubble-tail {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(252,244,230,0.97);
+    }
+
+    .thought-bubble.from-alfiya .bubble-tail.t1 {
+      width: 10px; height: 10px;
+      bottom: -12px; right: 16px;
+    }
+    .thought-bubble.from-alfiya .bubble-tail.t2 {
+      width: 6px; height: 6px;
+      bottom: -20px; right: 22px;
+    }
+    .thought-bubble.from-alfiya .bubble-tail.t3 {
+      width: 4px; height: 4px;
+      bottom: -26px; right: 26px;
+    }
+
+    .thought-bubble.from-adnan .bubble-tail.t1 {
+      width: 10px; height: 10px;
+      bottom: -12px; left: 16px;
+    }
+    .thought-bubble.from-adnan .bubble-tail.t2 {
+      width: 6px; height: 6px;
+      bottom: -20px; left: 22px;
+    }
+    .thought-bubble.from-adnan .bubble-tail.t3 {
+      width: 4px; height: 4px;
+      bottom: -26px; left: 26px;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+      70% { opacity: 1; transform: scale(1.05) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; transform: scale(0.9); }
+    }
+
+    .thought-bubble.fading {
+      animation: fadeOut 1.2s forwards;
+    }
+
+    /* ===== INPUT AREA ===== */
+    #inputArea {
+      flex: 0 0 35%;
+      display: flex;
+      background: rgba(5, 2, 1, 0.97);
+      border-top: 1px solid rgba(201,168,76,0.15);
+    }
+
+    .input-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(0.5rem, 2vw, 1rem) clamp(0.6rem, 2vw, 1.2rem);
+      gap: 0.4rem;
+      position: relative;
+    }
+
+    .input-panel.aloo-panel {
+      border-right: 1px solid rgba(184,90,120,0.2);
+      background: rgba(184,90,120,0.03);
+    }
+
+    .input-panel.adnan-panel {
+      background: rgba(201,168,76,0.03);
+    }
+
+    .panel-label {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(0.9rem, 3vw, 1.25rem);
+      text-align: center;
+    }
+
+    .aloo-panel .panel-label { color: var(--rose); }
+    .adnan-panel .panel-label { color: var(--gold); }
+
+    .panel-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.5rem 0.8rem;
+      color: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.4;
+    }
+
+    .aloo-panel .panel-input:focus { border-color: var(--rose); box-shadow: 0 0 0 2px rgba(184,90,120,0.12); }
+    .adnan-panel .panel-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.12); }
+
+    .panel-input::placeholder { color: rgba(249,240,225,0.28); font-style: italic; }
+
+    .panel-input.dimmed { opacity: 0.45; pointer-events: none; }
+    .panel-input.active { border-color: rgba(255,255,255,0.2); }
+
+    .send-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      cursor: pointer;
+      transition: all 0.22s;
+    }
+
+    .aloo-panel .send-btn {
+      background: linear-gradient(135deg, var(--rose), var(--dark-rose));
+      color: white;
+    }
+    .adnan-panel .send-btn {
+      background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+      color: var(--black);
+    }
+
+    .send-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== RECONNECTING OVERLAY ===== */
+    #reconnectOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3,1,8,0.85);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    #reconnectOverlay p {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    #reconnectOverlay small {
+      color: rgba(249,240,225,0.5);
+      font-style: italic;
+    }
+
+    /* Mobile stacked layout */
+    @media (max-width: 639px) {
+      #inputArea {
+        flex-direction: column;
+      }
+      .input-panel.aloo-panel {
+        border-right: none;
+        border-bottom: 1px solid rgba(184,90,120,0.2);
+      }
+      #sceneArea { flex: 0 0 58%; }
+      #inputArea { flex: 0 0 42%; }
+    }
+
+    /* Small screens — tighten scene */
+    @media (max-height: 600px) {
+      #sceneArea { flex: 0 0 55%; }
+      #inputArea { flex: 0 0 45%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div id="setupScreen">
+  <h1>🕯️ Our Virtual Date Night</h1>
+  <p>A candlelit dinner across the miles…</p>
+  <div class="role-cards">
+    <div class="role-card aloo-card" onclick="selectRole('aloo')">
+      <span class="emoji">💛</span>
+      <span class="name">I am Aloo</span>
+    </div>
+    <div class="role-card" onclick="selectRole('adnan')">
+      <span class="emoji">🖤</span>
+      <span class="name">I am Adnan</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ROOM SCREEN ===== -->
+<div id="roomScreen">
+  <h2 id="roomTitle">Setting up your table…</h2>
+
+  <!-- Adnan: show code -->
+  <div id="adnanRoomView" style="display:none; text-align:center;">
+    <div class="room-code-box">
+      <div class="room-code" id="roomCodeDisplay">------</div>
+      <div class="room-hint">Share this code with Aloo on WhatsApp 💬</div>
+    </div>
+  </div>
+
+  <!-- Aloo: enter code -->
+  <div id="alooRoomView" style="display:none;">
+    <div class="connect-input-group">
+      <label>Enter the code Adnan gave you ✨</label>
+      <input type="text" id="codeInput" maxlength="6" placeholder="e.g. abc123" autocomplete="off" spellcheck="false" />
+      <button class="btn-connect" onclick="alooConnect()">Connect 💛</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WAITING SCREEN ===== -->
+<div id="waitingScreen">
+  <div class="waiting-text">Waiting for your love to join…</div>
+  <div class="dots"><span>♥</span><span>♥</span><span>♥</span></div>
+</div>
+
+<!-- ===== DATE SCREEN ===== -->
+<div id="dateScreen">
+
+  <!-- Top bar -->
+  <div id="topBar">
+    <div id="statusDot">
+      <div class="dot" id="connDot"></div>
+      <span id="connLabel">Connecting…</span>
+    </div>
+    <div class="top-btns">
+      <button class="icon-btn" id="musicBtn" onclick="toggleMusic()" title="Music">🎵</button>
+      <button class="icon-btn" onclick="clearBubbles()" title="Clear messages">🗑️</button>
+    </div>
+  </div>
+
+  <!-- Scene -->
+  <div id="sceneArea">
+
+    <!-- Stars -->
+    <div class="stars" id="starsContainer"></div>
+
+    <!-- Window -->
+    <div class="window"></div>
+
+    <!-- Alfiya Avatar (left) -->
+    <div class="avatar-container alfiya" id="alfiyaContainer">
+      <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" aria-label="Alfiya">
+        <!-- Body / kurta -->
+        <ellipse cx="60" cy="122" rx="30" ry="20" fill="#c0415e" opacity="0.7"/>
+        <!-- Kurta body -->
+        <rect x="36" y="100" width="48" height="32" rx="10" fill="#d4587a"/>
+        <!-- Dupatta drape left shoulder -->
+        <path d="M36,105 Q20,115 18,130" stroke="#e8b4c0" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Dupatta drape right -->
+        <path d="M66,102 Q72,118 70,132" stroke="#e8b4c0" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- Neck -->
+        <rect x="53" y="90" width="14" height="14" rx="4" fill="#d4956a"/>
+        <!-- Head -->
+        <ellipse cx="60" cy="72" rx="22" ry="25" fill="#d4956a"/>
+        <!-- Hair (long, dark) -->
+        <ellipse cx="60" cy="54" rx="23" ry="14" fill="#1a0a08"/>
+        <path d="M38,58 Q30,85 34,105" fill="#1a0a08"/>
+        <path d="M82,58 Q88,78 82,100" fill="#1a0a08" opacity="0.6"/>
+        <!-- Hair parting highlight -->
+        <line x1="60" y1="47" x2="60" y2="58" stroke="#2a1010" stroke-width="1.5"/>
+        <!-- Left ear -->
+        <ellipse cx="38" cy="72" rx="4" ry="5" fill="#c4855a"/>
+        <!-- Right ear -->
+        <ellipse cx="82" cy="72" rx="4" ry="5" fill="#c4855a"/>
+        <!-- Gold earring left -->
+        <circle cx="38" cy="75" r="3" fill="#d4a820" opacity="0.9"/>
+        <!-- Gold earring right -->
+        <circle cx="82" cy="75" r="3" fill="#d4a820" opacity="0.9"/>
+        <!-- Eyes -->
+        <ellipse cx="51" cy="70" rx="5" ry="5.5" fill="#1a0808"/>
+        <ellipse cx="69" cy="70" rx="5" ry="5.5" fill="#1a0808"/>
+        <!-- Eye shine -->
+        <circle cx="53" cy="68" r="1.5" fill="white" opacity="0.85"/>
+        <circle cx="71" cy="68" r="1.5" fill="white" opacity="0.85"/>
+        <!-- Eyelashes left -->
+        <path d="M46,66 Q48,63 51,65" stroke="#1a0808" stroke-width="1.2" fill="none"/>
+        <path d="M56,65 Q57,63 55,64" stroke="#1a0808" stroke-width="1.2" fill="none"/>
+        <!-- Eyelashes right -->
+        <path d="M64,65 Q66,63 69,65" stroke="#1a0808" stroke-width="1.2" fill="none"/>
+        <path d="M74,65 Q75,63 73,64" stroke="#1a0808" stroke-width="1.2" fill="none"/>
+        <!-- Bindi -->
+        <circle cx="60" cy="60" r="2.5" fill="#d4a820"/>
+        <!-- Nose -->
+        <ellipse cx="60" cy="77" rx="3" ry="2" fill="#c0855a" opacity="0.6"/>
+        <!-- Small nose stud -->
+        <circle cx="63" cy="76" r="1" fill="#d4a820" opacity="0.8"/>
+        <!-- Lips (smile) -->
+        <path d="M53,84 Q60,90 67,84" stroke="#c0506a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M55,84 Q60,87 65,84" fill="#e07090" opacity="0.5"/>
+        <!-- Arms on table suggestion -->
+        <path d="M40,115 Q32,125 36,135" stroke="#c47858" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M80,115 Q88,125 84,135" stroke="#c47858" stroke-width="8" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Adnan Avatar (right) -->
+    <div class="avatar-container adnan" id="adnanContainer">
+      <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" aria-label="Adnan">
+        <!-- Body / dark kurta -->
+        <rect x="36" y="100" width="48" height="32" rx="10" fill="#1e2a5a"/>
+        <!-- Kurta collar detail -->
+        <path d="M54,100 L60,112 L66,100" fill="#2a3870" opacity="0.8"/>
+        <!-- Neck -->
+        <rect x="53" y="90" width="14" height="14" rx="4" fill="#c47a3a"/>
+        <!-- Head -->
+        <ellipse cx="60" cy="72" rx="22" ry="25" fill="#c47a3a"/>
+        <!-- Hair (short, dark) -->
+        <ellipse cx="60" cy="52" rx="22" ry="12" fill="#1a0a08"/>
+        <path d="M38,54 Q36,60 38,66" fill="#1a0a08"/>
+        <path d="M82,54 Q84,60 82,66" fill="#1a0a08"/>
+        <!-- Hair side texture -->
+        <path d="M39,62 Q42,58 46,60" stroke="#2a1008" stroke-width="1" fill="none"/>
+        <!-- Left ear -->
+        <ellipse cx="38" cy="72" rx="4" ry="5" fill="#b46a2a"/>
+        <!-- Right ear -->
+        <ellipse cx="82" cy="72" rx="4" ry="5" fill="#b46a2a"/>
+        <!-- Eyes -->
+        <ellipse cx="51" cy="70" rx="5" ry="5" fill="#0f0806"/>
+        <ellipse cx="69" cy="70" rx="5" ry="5" fill="#0f0806"/>
+        <!-- Eye shine -->
+        <circle cx="53" cy="68" r="1.5" fill="white" opacity="0.8"/>
+        <circle cx="71" cy="68" r="1.5" fill="white" opacity="0.8"/>
+        <!-- Eyebrows (thicker/male) -->
+        <path d="M45,63 Q51,61 57,63" stroke="#1a0808" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M63,63 Q69,61 75,63" stroke="#1a0808" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Stubble -->
+        <ellipse cx="60" cy="88" rx="14" ry="6" fill="#8a4a18" opacity="0.25"/>
+        <ellipse cx="50" cy="86" rx="5" ry="3" fill="#6a3010" opacity="0.2"/>
+        <ellipse cx="70" cy="86" rx="5" ry="3" fill="#6a3010" opacity="0.2"/>
+        <!-- Nose -->
+        <ellipse cx="60" cy="77" rx="4" ry="3" fill="#b4703a" opacity="0.5"/>
+        <!-- Lips (smile) -->
+        <path d="M53,84 Q60,90 67,84" stroke="#a05030" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M55,84 Q60,87 65,84" fill="#b06040" opacity="0.4"/>
+        <!-- Arms on table suggestion -->
+        <path d="M40,115 Q32,125 36,135" stroke="#b47038" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M80,115 Q88,125 84,135" stroke="#b47038" stroke-width="8" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-top">
+        <div class="table-glow"></div>
+        <!-- Candles -->
+        <div class="candle-group">
+          <div class="candle">
+            <div class="flame"></div>
+            <div class="candle-body"></div>
+            <div class="candle-base"></div>
+          </div>
+          <div class="candle">
+            <div class="flame" style="animation-delay:-0.7s"></div>
+            <div class="candle-body"></div>
+            <div class="candle-base"></div>
+          </div>
+        </div>
+        <!-- Rose -->
+        <div class="rose">🌹</div>
+        <!-- Plates & glasses -->
+        <div class="table-items">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="glass"></div>
+            <div class="plate"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="glass"></div>
+            <div class="plate"></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-leg"></div>
+    </div>
+
+  </div><!-- end sceneArea -->
+
+  <!-- Input area -->
+  <div id="inputArea">
+    <!-- Aloo panel -->
+    <div class="input-panel aloo-panel">
+      <div class="panel-label">Aloo 💛</div>
+      <textarea class="panel-input" id="alooInput" placeholder="Type something sweet…" rows="2"></textarea>
+      <button class="send-btn" id="alooSendBtn" onclick="sendMessage('aloo')">Send 💛</button>
+    </div>
+    <!-- Adnan panel -->
+    <div class="input-panel adnan-panel">
+      <div class="panel-label">Adnan 🖤</div>
+      <textarea class="panel-input" id="adnanInput" placeholder="Type something sweet…" rows="2"></textarea>
+      <button class="send-btn" id="adnanSendBtn" onclick="sendMessage('adnan')">Send 🖤</button>
+    </div>
+  </div>
+
+</div><!-- end dateScreen -->
+
+<!-- Reconnect overlay -->
+<div id="reconnectOverlay">
+  <p>Reconnecting… 🕯️</p>
+  <small>Hold on, your love is just a heartbeat away</small>
+</div>
+
+<!-- Audio -->
+<audio id="bgAudio" loop src="sitare.mp3" preload="auto"></audio>
+
+<script>
+// ========================
+//   GLOBALS
+// ========================
+let myRole = null; // 'aloo' or 'adnan'
+let peer = null;
+let conn = null;
+let myPeerId = null;
+let musicPlaying = false;
+const bgAudio = document.getElementById('bgAudio');
+
+// ========================
+//   STARS
+// ========================
+(function generateStars() {
+  const container = document.getElementById('starsContainer');
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    const dur = (2 + Math.random() * 3).toFixed(1) + 's';
+    s.style.setProperty('--dur', dur);
+    s.style.animationDelay = (Math.random() * 3).toFixed(1) + 's';
+    container.appendChild(s);
+  }
+})();
+
+// ========================
+//   AUDIO
+// ========================
+function toggleMusic() {
+  if (musicPlaying) {
+    bgAudio.pause();
+    document.getElementById('musicBtn').textContent = '🎵';
+    musicPlaying = false;
+  } else {
+    bgAudio.play().catch(() => {});
+    document.getElementById('musicBtn').textContent = '⏸';
+    musicPlaying = true;
+  }
+}
+
+// Soft bell ping via Web Audio API
+function playPing() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+}
+
+// ========================
+//   ROLE SELECTION
+// ========================
+function selectRole(role) {
+  myRole = role;
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('roomScreen').style.display = 'flex';
+
+  initPeer(role);
+}
+
+function initPeer(role) {
+  document.getElementById('roomTitle').textContent =
+    role === 'adnan' ? 'Your table is being set… 🕯️' : 'Getting ready to join… 💛';
+
+  peer = new Peer(undefined, {
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    }
+  });
+
+  peer.on('open', function(id) {
+    myPeerId = id;
+    const code = id.substring(0, 6);
+
+    if (role === 'adnan') {
+      document.getElementById('roomTitle').textContent = 'Your room code is ready 🕯️';
+      document.getElementById('adnanRoomView').style.display = 'block';
+      document.getElementById('roomCodeDisplay').textContent = code.toUpperCase();
+
+      // Wait for Aloo to connect
+      peer.on('connection', function(c) {
+        handleConnection(c);
+      });
+
+      // Show waiting after code display (after brief moment)
+      setTimeout(() => {
+        document.getElementById('roomScreen').style.display = 'none';
+        document.getElementById('waitingScreen').style.display = 'flex';
+      }, 100);
+
+      // Re-show room so Adnan can see the code + waiting on same screen
+      document.getElementById('waitingScreen').style.display = 'none';
+      document.getElementById('roomScreen').style.display = 'flex';
+
+    } else {
+      // Aloo
+      document.getElementById('roomTitle').textContent = 'Enter Adnan\'s code 💛';
+      document.getElementById('alooRoomView').style.display = 'block';
+    }
+  });
+
+  peer.on('error', function(err) {
+    console.error('PeerJS error:', err);
+  });
+}
+
+function alooConnect() {
+  const raw = document.getElementById('codeInput').value.trim().toUpperCase();
+  if (raw.length < 6) {
+    alert('Please enter the 6-character code from Adnan 💛');
+    return;
+  }
+
+  document.getElementById('roomScreen').style.display = 'none';
+  document.getElementById('waitingScreen').style.display = 'flex';
+
+  // Find Adnan's full peer ID by connecting with first 6 chars
+  // PeerJS peer IDs from unpkg default server are random UUIDs
+  // The code IS the first 6 chars of the peer ID — we need to find the full ID
+  // Actually: the room code is already the 6-char prefix of the UUID.
+  // We need Adnan's full peer ID. Let's store first 6 and try direct connection.
+  // Since peerjs default cloud server assigns random UUIDs, the 6-char prefix
+  // is just for display. Aloo needs to enter it and we try to find by prefix.
+  // Workaround: Adnan shows full ID or we pad it.
+  // Better approach: Adnan shows FULL peer ID but we display nicely.
+  // Let's use a simpler approach: use a known prefix room code system.
+  // We'll have Adnan's peer use a custom ID = uppercase 6 random chars.
+
+  // Actually let's reconnect with custom short IDs:
+  // Re-init peer for Adnan with a short custom ID
+  // The implementation: Adnan creates peer with random short alphanumeric ID
+  // Aloo connects to that exact ID.
+
+  const targetId = raw.toLowerCase();
+
+  const c = peer.connect(targetId, { reliable: true });
+  handleConnection(c);
+}
+
+function handleConnection(c) {
+  conn = c;
+
+  c.on('open', function() {
+    showDateScreen();
+    setConnStatus('connected');
+    document.getElementById('reconnectOverlay').style.display = 'none';
+  });
+
+  c.on('data', function(data) {
+    if (data && data.from && data.message) {
+      showThoughtBubble(data.from, data.message);
+      playPing();
+    }
+  });
+
+  c.on('close', function() {
+    setConnStatus('disconnected');
+    showReconnectOverlay();
+  });
+
+  c.on('error', function(err) {
+    console.error('Connection error:', err);
+    setConnStatus('disconnected');
+  });
+}
+
+// ========================
+//   SCREEN TRANSITIONS
+// ========================
+function showDateScreen() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('roomScreen').style.display = 'none';
+  document.getElementById('waitingScreen').style.display = 'none';
+  document.getElementById('dateScreen').style.display = 'flex';
+  setupInputPanels();
+}
+
+function setupInputPanels() {
+  const alooInput = document.getElementById('alooInput');
+  const adnanInput = document.getElementById('adnanInput');
+  const alooBtn = document.getElementById('alooSendBtn');
+  const adnanBtn = document.getElementById('adnanSendBtn');
+
+  if (myRole === 'aloo') {
+    // Aloo's input is active
+    alooInput.classList.add('active');
+    alooInput.placeholder = 'Say something sweet… 💛';
+    adnanInput.classList.add('dimmed');
+    adnanInput.placeholder = 'Waiting for Adnan… 🖤';
+    adnanBtn.disabled = true;
+  } else if (myRole === 'adnan') {
+    // Adnan's input is active
+    adnanInput.classList.add('active');
+    adnanInput.placeholder = 'Say something sweet… 🖤';
+    alooInput.classList.add('dimmed');
+    alooInput.placeholder = 'Waiting for Aloo… 💛';
+    alooBtn.disabled = true;
+  }
+
+  // Enter key sends
+  alooInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (myRole === 'aloo') sendMessage('aloo');
+    }
+  });
+
+  adnanInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (myRole === 'adnan') sendMessage('adnan');
+    }
+  });
+}
+
+// ========================
+//   STATUS
+// ========================
+function setConnStatus(status) {
+  const dot = document.getElementById('connDot');
+  const label = document.getElementById('connLabel');
+  dot.className = 'dot';
+  if (status === 'connected') {
+    dot.classList.add('connected');
+    label.textContent = 'Connected 🖤';
+  } else if (status === 'disconnected') {
+    dot.classList.add('disconnected');
+    label.textContent = 'Disconnected';
+  } else {
+    label.textContent = 'Connecting…';
+  }
+}
+
+function showReconnectOverlay() {
+  const ov = document.getElementById('reconnectOverlay');
+  ov.style.display = 'flex';
+}
+
+// ========================
+//   SEND MESSAGE
+// ========================
+function sendMessage(sender) {
+  const inputEl = document.getElementById(sender + 'Input');
+  const text = inputEl.value.trim();
+  if (!text) return;
+
+  inputEl.value = '';
+
+  // Show locally immediately
+  showThoughtBubble(sender, text);
+  playPing();
+
+  // Send to peer if connected
+  if (conn && conn.open) {
+    try {
+      conn.send({ from: sender, message: text });
+    } catch(e) {
+      console.error('Send error:', e);
+    }
+  }
+}
+
+// ========================
+//   THOUGHT BUBBLES
+// ========================
+let bubbleTimeouts = [];
+
+function showThoughtBubble(from, text) {
+  const scene = document.getElementById('sceneArea');
+  const sceneRect = scene.getBoundingClientRect();
+
+  // Get avatar position
+  const avatarEl = from === 'aloo'
+    ? document.getElementById('alfiyaContainer')
+    : document.getElementById('adnanContainer');
+
+  const avatarRect = avatarEl.getBoundingClientRect();
+
+  // Remove old bubble for this person if any
+  const oldBubble = document.querySelector('.thought-bubble.from-' + from);
+  if (oldBubble) {
+    oldBubble.remove();
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'thought-bubble from-' + from;
+
+  const senderLabel = document.createElement('div');
+  senderLabel.className = 'sender-label';
+  senderLabel.textContent = from === 'aloo' ? 'Aloo 💛' : 'Adnan 🖤';
+  bubble.appendChild(senderLabel);
+
+  const msgText = document.createElement('div');
+  msgText.textContent = text;
+  bubble.appendChild(msgText);
+
+  // Tail circles
+  ['t1','t2','t3'].forEach(cls => {
+    const t = document.createElement('div');
+    t.className = 'bubble-tail ' + cls;
+    bubble.appendChild(t);
+  });
+
+  scene.appendChild(bubble);
+
+  // Position the bubble above avatar, relative to scene
+  const avatarLeft = avatarRect.left - sceneRect.left;
+  const avatarTop = avatarRect.top - sceneRect.top;
+  const avatarWidth = avatarRect.width;
+  const avatarHeight = avatarRect.height;
+
+  // After appending so we can get bubble size
+  requestAnimationFrame(() => {
+    const bw = bubble.offsetWidth;
+    const bh = bubble.offsetHeight;
+
+    let left, top;
+
+    if (from === 'aloo') {
+      // Alfiya: bubble to right of avatar center, above her head
+      left = avatarLeft + avatarWidth * 0.3;
+      top = avatarTop - bh - 30;
+    } else {
+      // Adnan: bubble to left of avatar center, above his head
+      left = avatarLeft + avatarWidth * 0.1 - bw * 0.5;
+      top = avatarTop - bh - 30;
+    }
+
+    // Clamp within scene
+    const maxLeft = sceneRect.width - bw - 8;
+    const maxTop = sceneRect.height - bh - 8;
+    left = Math.max(8, Math.min(left, maxLeft));
+    top = Math.max(8, Math.min(top, maxTop));
+
+    bubble.style.left = left + 'px';
+    bubble.style.top = top + 'px';
+  });
+
+  // Auto fade after 10 seconds
+  const tid = setTimeout(() => {
+    bubble.classList.add('fading');
+    setTimeout(() => bubble.remove(), 1200);
+  }, 10000);
+
+  bubbleTimeouts.push(tid);
+}
+
+function clearBubbles() {
+  document.querySelectorAll('.thought-bubble').forEach(b => b.remove());
+  bubbleTimeouts.forEach(t => clearTimeout(t));
+  bubbleTimeouts = [];
+}
+
+// ========================
+//   RE-INIT PEER WITH SHORT CUSTOM ID
+// ========================
+// Override initPeer to use short 6-char IDs for easy sharing
+// We regenerate the peer with a custom short ID for Adnan
+(function patchInitPeer() {
+  const original = window.initPeer;
+  window.initPeer = function(role) {
+    document.getElementById('roomTitle').textContent =
+      role === 'adnan' ? 'Your table is being set… 🕯️' : 'Getting ready to join… 💛';
+
+    // Generate a nice 6-char alphanumeric ID for Adnan
+    const shortId = role === 'adnan' ? generateShortId() : undefined;
+
+    peer = new Peer(shortId, {
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      }
+    });
+
+    peer.on('open', function(id) {
+      myPeerId = id;
+      const displayCode = id.substring(0, 6).toUpperCase();
+
+      if (role === 'adnan') {
+        document.getElementById('roomTitle').textContent = 'Your room code is ready 🕯️';
+        document.getElementById('adnanRoomView').style.display = 'block';
+        document.getElementById('roomCodeDisplay').textContent = displayCode;
+
+        // Wait for Aloo to connect
+        peer.on('connection', function(c) {
+          handleConnection(c);
+          // Hide waiting, show date
+        });
+
+        // Show waiting screen
+        document.getElementById('roomScreen').style.display = 'none';
+        document.getElementById('waitingScreen').style.display = 'flex';
+
+        // Re-show room code on top of waiting? No: show code screen, then after 2s show waiting
+        // Better: show room screen (with code) and add waiting message below
+        document.getElementById('waitingScreen').style.display = 'none';
+        document.getElementById('roomScreen').style.display = 'flex';
+
+        // Show dots waiting text inside room screen
+        const waitMsg = document.createElement('div');
+        waitMsg.style.cssText = 'text-align:center; margin-top:0.5rem;';
+        waitMsg.innerHTML = '<div class="waiting-text" style="font-size:1.1rem;color:rgba(249,240,225,0.6);">Waiting for Aloo to join… <span style="color:var(--rose)">♥</span></div>';
+        document.getElementById('roomScreen').appendChild(waitMsg);
+
+      } else {
+        // Aloo
+        document.getElementById('roomTitle').textContent = 'Enter Adnan\'s code 💛';
+        document.getElementById('alooRoomView').style.display = 'block';
+      }
+    });
+
+    peer.on('error', function(err) {
+      console.error('PeerJS error:', err.type, err);
+      // If ID taken, retry with new ID for Adnan
+      if (err.type === 'unavailable-id' && role === 'adnan') {
+        peer.destroy();
+        window.initPeer(role);
+      }
+    });
+  };
+})();
+
+function generateShortId() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 6; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
+// ========================
+//  KEYBOARD / UX POLISH
+// ========================
+document.getElementById('codeInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') alooConnect();
+});
+
+// Auto-uppercase code input
+document.getElementById('codeInput').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
+});
+
+</script>
+</body>
+</html>

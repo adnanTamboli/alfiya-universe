@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Our Little World 🌟</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#C9A84C;--rose:#B85A78;--rose-l:#E8A0B4;--gold-l:#E8D5A3;--bg:#030108}
+html,body{height:100%;width:100%;overflow:hidden;background:#030108;font-family:'Cormorant Garamond',serif;color:#fff;touch-action:none}
+
+/* ══ SCREENS ══ */
+.screen{display:none;position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;z-index:100}
+.screen.on{display:flex}
+
+/* ══ SETUP ══ */
+#setup{background:radial-gradient(ellipse at 50% 40%,rgba(140,70,10,0.4) 0%,#030108 65%);gap:2rem;padding:2rem;text-align:center}
+.s-title{font-family:'Dancing Script',cursive;font-size:clamp(2rem,8vw,3.5rem);color:var(--gold);text-shadow:0 0 30px rgba(201,168,76,0.5)}
+.s-sub{font-style:italic;color:rgba(255,255,255,0.45);font-size:clamp(0.9rem,3vw,1.1rem)}
+.cards{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.card{background:rgba(255,255,255,0.03);border:1.5px solid rgba(201,168,76,0.25);border-radius:22px;padding:1.8rem 2.2rem;cursor:pointer;min-width:148px;text-align:center;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.card:hover{transform:translateY(-8px) scale(1.05);border-color:var(--gold);box-shadow:0 20px 50px rgba(201,168,76,0.2)}
+.card.rose:hover{border-color:var(--rose);box-shadow:0 20px 50px rgba(184,90,120,0.2)}
+.card img{width:88px;height:88px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid rgba(201,168,76,0.35);display:block;margin:0 auto 0.7rem}
+.card .cn{font-family:'Dancing Script',cursive;font-size:1.6rem;color:var(--gold)}
+.card.rose .cn{color:var(--rose-l)}
+
+/* ══ ROOM SCREEN ══ */
+#roomscr{background:radial-gradient(ellipse at 50% 40%,rgba(100,50,5,0.35) 0%,#030108 65%);gap:1.4rem;padding:2rem;text-align:center}
+.rt{font-family:'Dancing Script',cursive;font-size:clamp(1.5rem,5vw,2.4rem);color:var(--gold)}
+.rd{font-style:italic;color:rgba(255,255,255,0.5);font-size:clamp(0.85rem,2.5vw,1rem);max-width:360px;line-height:1.75}
+.codebox{background:rgba(201,168,76,0.06);border:1.5px solid rgba(201,168,76,0.28);border-radius:18px;padding:1.2rem 2rem;max-width:400px;width:100%}
+.cl{font-style:italic;color:rgba(255,255,255,0.38);font-size:0.82rem;margin-bottom:0.4rem}
+.cv{font-size:0.95rem;color:var(--gold-l);word-break:break-all;user-select:all}
+.btns{display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center}
+.btn{padding:0.75rem 1.6rem;border:none;border-radius:50px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:0.95rem;font-weight:600;transition:transform 0.2s,box-shadow 0.2s;display:inline-flex;align-items:center;gap:0.4rem}
+.bg{background:linear-gradient(135deg,#8B6914,var(--gold));color:#000}
+.br{background:linear-gradient(135deg,#8B2252,var(--rose));color:#fff}
+.bo{background:transparent;border:1px solid rgba(201,168,76,0.35);color:var(--gold)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(201,168,76,0.2)}
+.bsm{padding:0.45rem 1rem;font-size:0.85rem}
+.jinput{width:100%;max-width:380px;padding:0.9rem 1.3rem;background:rgba(255,255,255,0.04);border:1.5px solid rgba(201,168,76,0.25);border-radius:12px;color:var(--gold-l);font-family:'Cormorant Garamond',serif;font-size:0.95rem;outline:none;text-align:center;transition:border-color 0.3s}
+.jinput::placeholder{color:rgba(255,255,255,0.2);font-style:italic}
+.jinput:focus{border-color:rgba(201,168,76,0.5)}
+.srow{display:flex;align-items:center;gap:0.5rem;font-style:italic;color:rgba(255,255,255,0.4);font-size:0.88rem}
+.dot{width:9px;height:9px;border-radius:50%;background:rgba(201,168,76,0.5);animation:blink 1.5s ease-in-out infinite}
+.dot.g{background:#5cb85c;animation:none}.dot.r{background:#e05555;animation:none}.dot.o{background:#e09030;animation:none}
+@keyframes blink{0%,100%{opacity:0.4}50%{opacity:1}}
+.err{color:#ff9090;font-style:italic;font-size:0.85rem;min-height:1rem}
+
+/* ══ GAME CANVAS ══ */
+#gameWrap{position:fixed;inset:0;display:none}
+#gameWrap.on{display:block}
+#gc{display:block;width:100%;height:100%}
+
+/* ══ GAME HUD ══ */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:none;padding:0.5rem 0.8rem;background:linear-gradient(to bottom,rgba(3,1,8,0.75),transparent);backdrop-filter:blur(4px);align-items:center;justify-content:space-between}
+#hud.on{display:flex}
+.hud-title{font-family:'Dancing Script',cursive;font-size:clamp(0.9rem,3.5vw,1.2rem);color:var(--gold)}
+.hud-status{display:flex;align-items:center;gap:0.4rem;font-style:italic;color:rgba(255,255,255,0.4);font-size:0.78rem}
+.hud-icons{display:flex;gap:0.4rem}
+.hicon{background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:20px;padding:0.3rem 0.65rem;color:var(--gold);cursor:pointer;font-size:0.85rem}
+.hicon:hover{border-color:var(--gold)}
+
+/* ══ INTERACT PROMPT ══ */
+#prompt{
+  position:fixed;bottom:120px;left:50%;transform:translateX(-50%);
+  background:rgba(3,1,8,0.9);border:1px solid rgba(201,168,76,0.35);
+  border-radius:50px;padding:0.45rem 1.1rem;font-style:italic;color:var(--gold-l);
+  font-size:clamp(0.75rem,2.5vw,0.9rem);display:none;z-index:50;pointer-events:none;
+  animation:promptPulse 2s ease-in-out infinite;white-space:nowrap
+}
+@keyframes promptPulse{0%,100%{opacity:0.7}50%{opacity:1}}
+
+/* ══ CHAT ══ */
+#chatBox{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  display:none;z-index:55;background:rgba(3,1,8,0.95);border:1px solid rgba(201,168,76,0.25);
+  border-radius:16px;padding:0.6rem 0.8rem;flex-direction:row;gap:0.5rem;align-items:center;
+  width:min(380px,90vw)
+}
+#chatBox.on{display:flex}
+#chatIn{flex:1;background:transparent;border:none;color:var(--cream,#f9f0e1);font-family:'Cormorant Garamond',serif;font-size:0.95rem;outline:none}
+#chatIn::placeholder{color:rgba(255,255,255,0.2);font-style:italic}
+#chatSend{background:linear-gradient(135deg,#8B6914,var(--gold));border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;color:#000;font-size:0.9rem;flex-shrink:0}
+
+/* ══ EMOTES ══ */
+#emotes{position:fixed;bottom:90px;right:12px;display:none;flex-direction:column;gap:0.4rem;z-index:55}
+#emotes.on{display:flex}
+.emote-btn{background:rgba(3,1,8,0.9);border:1px solid rgba(201,168,76,0.2);border-radius:50%;width:38px;height:38px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:transform 0.2s}
+.emote-btn:active{transform:scale(0.9)}
+
+/* ══ MOBILE JOYSTICK ══ */
+#joyWrap{position:fixed;bottom:20px;left:20px;width:110px;height:110px;display:none;z-index:55;touch-action:none}
+#joyWrap.on{display:block}
+#joyBase{position:absolute;inset:0;border-radius:50%;background:rgba(255,255,255,0.06);border:2px solid rgba(201,168,76,0.2)}
+#joyKnob{position:absolute;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.8),rgba(139,105,20,0.8));top:50%;left:50%;transform:translate(-50%,-50%);transition:transform 0.05s}
+
+/* ══ DESK/PC WASD hint ══ */
+#wasdHint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-style:italic;color:rgba(255,255,255,0.25);font-size:0.78rem;display:none;z-index:50}
+#wasdHint.on{display:block}
+
+/* ══ SPECIAL MOMENT ══ */
+#specialMoment{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(3,1,8,0.97);border:1px solid rgba(201,168,76,0.3);
+  border-radius:24px;padding:2rem 2.5rem;text-align:center;z-index:200;
+  max-width:min(380px,90vw);display:none;
+  animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)
+}
+#specialMoment.on{display:block}
+.sm-title{font-family:'Dancing Script',cursive;font-size:1.8rem;color:var(--gold);margin-bottom:0.75rem}
+.sm-text{font-style:italic;color:rgba(255,255,255,0.8);font-size:1.05rem;line-height:1.8}
+.sm-close{margin-top:1rem;cursor:pointer;font-style:italic;color:rgba(255,255,255,0.35);font-size:0.85rem}
+@keyframes popIn{0%{opacity:0;transform:translate(-50%,-50%) scale(0.7)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+</style>
+</head>
+<body>
+
+<!-- ══ SETUP ══ -->
+<div class="screen on" id="setup">
+  <p class="s-title">🌟 Our Little World</p>
+  <p class="s-sub">Walk together, even from miles apart</p>
+  <div class="cards">
+    <div class="card rose" onclick="chooseRole('aloo')">
+      <img src="aloo-avatar.png" alt="Aloo"/>
+      <div class="cn">I am Aloo</div>
+    </div>
+    <div class="card" onclick="chooseRole('adnan')">
+      <img src="adnan-avatar.png" alt="Adnan"/>
+      <div class="cn">I am Adnan</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROOM SCREEN ══ -->
+<div class="screen" id="roomscr">
+  <h2 class="rt" id="rt">Setting up…</h2>
+  <p class="rd" id="rd">One moment 🕯️</p>
+
+  <div id="adnanP" style="display:none;flex-direction:column;align-items:center;gap:1rem;width:100%;max-width:400px;padding:0 1.5rem">
+    <div class="codebox"><div class="cl">Your Room Code — share with Aloo</div><div class="cv" id="codeVal">—</div></div>
+    <div class="btns">
+      <button class="btn bg bsm" onclick="copyC()">📋 Copy</button>
+      <button class="btn bg bsm" onclick="waC()">💬 WhatsApp</button>
+    </div>
+    <div class="srow"><span class="dot o" id="aDot"></span><span id="aStat">Waiting for Aloo…</span></div>
+  </div>
+
+  <div id="alooP" style="display:none;flex-direction:column;align-items:center;gap:1rem;width:100%;max-width:400px;padding:0 1.5rem">
+    <input class="jinput" id="codeIn" placeholder="Paste Adnan's room code…" autocomplete="off" spellcheck="false"/>
+    <button class="btn br" onclick="joinR()">💛 Enter Our World</button>
+    <p class="err" id="jerr"></p>
+  </div>
+
+  <div class="srow" id="loadRow" style="margin-top:0.5rem">
+    <span class="dot o" id="ldot"></span><span id="ltxt">Connecting…</span>
+  </div>
+  <button class="btn bo bsm" id="retBtn" style="display:none;margin-top:0.8rem" onclick="retryP()">🔄 Retry</button>
+</div>
+
+<!-- ══ GAME ══ -->
+<div id="gameWrap">
+  <canvas id="gc"></canvas>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <span class="hud-title">🌟 Our Little World</span>
+  <div class="hud-status"><span class="dot" id="hdot"></span><span id="hstat">Connected</span></div>
+  <div class="hud-icons">
+    <span class="hicon" onclick="toggleMusic()">♪</span>
+    <span class="hicon" id="sitBtn" onclick="interact()" style="display:none">🪑 Sit</span>
+  </div>
+</div>
+
+<!-- Interact prompt -->
+<div id="prompt"></div>
+
+<!-- Chat -->
+<div id="chatBox">
+  <input id="chatIn" placeholder="Say something… 💬" autocomplete="off"/>
+  <button id="chatSend" onclick="sendChat()">➤</button>
+</div>
+
+<!-- Emotes -->
+<div id="emotes">
+  <div class="emote-btn" onclick="sendEmote('❤️')">❤️</div>
+  <div class="emote-btn" onclick="sendEmote('😊')">😊</div>
+  <div class="emote-btn" onclick="sendEmote('👋')">👋</div>
+  <div class="emote-btn" onclick="sendEmote('🌹')">🌹</div>
+</div>
+
+<!-- Mobile joystick -->
+<div id="joyWrap">
+  <div id="joyBase"></div>
+  <div id="joyKnob"></div>
+</div>
+
+<!-- Desktop hint -->
+<div id="wasdHint">WASD / Arrow keys to move &nbsp;•&nbsp; E to sit/stand &nbsp;•&nbsp; T to chat</div>
+
+<!-- Special moment popup -->
+<div id="specialMoment">
+  <div class="sm-title">🕯️ Dinner For Two</div>
+  <p class="sm-text" id="smText">You both sat down at the table together.<br/>Miles apart, yet sharing the same candlelight. 🖤</p>
+  <div class="sm-close" onclick="document.getElementById('specialMoment').classList.remove('on')">Close ✕</div>
+</div>
+
+<audio id="bgAudio" loop src="sitare.mp3"></audio>
+
+<script>
+/* ━━━━━━━━━━━━━━━━━━
+   STATE
+━━━━━━━━━━━━━━━━━━ */
+let myRole = null, peer = null, conn = null, peerTimeout = null;
+let musicOn = false;
+
+// Virtual world size
+const VW = 900, VH = 520;
+let scale = 1, offsetX = 0, offsetY = 0;
+
+// Player
+const me = { x: 0, y: 0, role: '', name: '', img: null, facing: 'down', sitting: false, sitSeat: null, moving: false, chatMsg: '', chatTimer: null, emote: '', emoteTimer: null };
+const other = { x: 0, y: 0, role: '', name: '', img: null, facing: 'down', sitting: false, chatMsg: '', chatTimer: null, emote: '', emoteTimer: null, online: false };
+
+// Spawns
+const SPAWN = { aloo: {x:160, y:340}, adnan: {x:740, y:340} };
+
+// Room objects
+const TABLE = {x:380, y:200, w:140, h:90}; // dining table (ellipse)
+const SEATS = [
+  {id:'seat1', x:450, y:165, facing:'down', takenBy:null},  // top
+  {id:'seat2', x:450, y:305, facing:'up',   takenBy:null},  // bottom
+];
+const SOFA  = {x:50,  y:185, w:110, h:55};
+const SOFA_SEAT = {id:'sofa1', x:105, y:215, facing:'down', takenBy:null};
+const OBSTACLES = [
+  {x:0,   y:0,   w:VW, h:45},   // top wall
+  {x:0,   y:0,   w:35, h:VH},   // left wall
+  {x:VW-35,y:0,  w:35, h:VH},  // right wall
+  {x:0,   y:VH-30,w:VW,h:30},  // bottom wall
+  {x:TABLE.x-10,y:TABLE.y,w:TABLE.w+20,h:TABLE.h}, // table block
+  {x:SOFA.x, y:SOFA.y, w:SOFA.w, h:SOFA.h},       // sofa block
+];
+const ALL_SEATS = [...SEATS, SOFA_SEAT];
+
+// Input
+const keys = {};
+let joyDX = 0, joyDY = 0;
+let joyActive = false;
+
+/* ━━━━━━━━━━━━━━━━━━
+   PEER
+━━━━━━━━━━━━━━━━━━ */
+function chooseRole(role){
+  myRole = role;
+  me.role = role;
+  me.name = role === 'aloo' ? 'Aloo 💛' : 'Adnan 🖤';
+  document.getElementById('setup').classList.remove('on');
+  document.getElementById('roomscr').classList.add('on');
+
+  if(role === 'adnan'){
+    document.getElementById('rt').textContent = 'Your world is ready 🌟';
+    document.getElementById('rd').textContent = 'Share this code with Aloo so she can join.';
+    startPeer();
+  } else {
+    document.getElementById('rt').textContent = 'Join the world 💛';
+    document.getElementById('rd').textContent = 'Enter the code Adnan shared with you.';
+    document.getElementById('loadRow').style.display = 'none';
+    startPeer();
+    setTimeout(()=>{
+      document.getElementById('alooP').style.display = 'flex';
+      document.getElementById('codeIn').addEventListener('keydown', e=>{ if(e.key==='Enter') joinR(); });
+    }, 100);
+  }
+}
+
+function startPeer(){
+  document.getElementById('loadRow').style.display = 'flex';
+  document.getElementById('ltxt').textContent = 'Connecting to server…';
+  document.getElementById('ldot').className = 'dot o';
+  document.getElementById('retBtn').style.display = 'none';
+  peerTimeout = setTimeout(()=>{
+    document.getElementById('ltxt').textContent = 'Slow server — tap Retry';
+    document.getElementById('ldot').className = 'dot r';
+    document.getElementById('retBtn').style.display = 'inline-flex';
+  }, 12000);
+
+  peer = new Peer(undefined, {config:{iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'}
+  ]}});
+
+  peer.on('open', id=>{
+    clearTimeout(peerTimeout);
+    document.getElementById('loadRow').style.display = 'none';
+    if(myRole === 'adnan'){
+      document.getElementById('rt').textContent = 'Ready! 🌟';
+      document.getElementById('rd').textContent = 'Share this with Aloo and wait for her…';
+      document.getElementById('codeVal').textContent = id;
+      document.getElementById('adnanP').style.display = 'flex';
+      peer.on('connection', c => setupConn(c));
+    }
+  });
+
+  peer.on('error', err=>{
+    clearTimeout(peerTimeout);
+    document.getElementById('ldot').className = 'dot r';
+    document.getElementById('ltxt').textContent = 'Error: ' + err.type;
+    document.getElementById('retBtn').style.display = 'inline-flex';
+    if(err.type==='peer-unavailable') document.getElementById('jerr').textContent = 'Code not found. Check and retry.';
+  });
+}
+
+function retryP(){ if(peer) try{peer.destroy()}catch(e){}; startPeer(); }
+
+function joinR(){
+  const code = document.getElementById('codeIn').value.trim();
+  if(!code){ document.getElementById('jerr').textContent = 'Enter the code first.'; return; }
+  document.getElementById('jerr').textContent = '';
+  document.getElementById('rt').textContent = 'Joining… 💛';
+  if(!peer||peer.destroyed){ document.getElementById('jerr').textContent = 'Still connecting…'; return; }
+  try{ const c = peer.connect(code,{reliable:true}); setupConn(c); }
+  catch(e){ document.getElementById('jerr').textContent = 'Could not connect. Check the code.'; }
+}
+
+function setupConn(c){
+  conn = c;
+  let opened = false;
+  setTimeout(()=>{ if(!opened) document.getElementById('jerr').textContent='Timed out. Check the code.'; }, 15000);
+  conn.on('open', ()=>{
+    opened = true;
+    clearTimeout(peerTimeout);
+    startGame();
+    conn.send({type:'hello', role:myRole});
+  });
+  conn.on('data', onData);
+  conn.on('close', ()=>{ document.getElementById('hdot').className='dot r'; document.getElementById('hstat').textContent='Disconnected 💔'; });
+  conn.on('error', err=>console.error(err));
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   START GAME
+━━━━━━━━━━━━━━━━━━ */
+const alooImg  = new Image(); alooImg.src  = 'aloo-avatar.png';
+const adnanImg = new Image(); adnanImg.src = 'adnan-avatar.png';
+
+function startGame(){
+  // Place me at spawn
+  const s = SPAWN[myRole];
+  me.x = s.x; me.y = s.y;
+  me.img = myRole === 'aloo' ? alooImg : adnanImg;
+
+  // Place other at their spawn (will update on data)
+  const or = myRole === 'aloo' ? 'adnan' : 'aloo';
+  other.role = or;
+  other.name = or === 'aloo' ? 'Aloo 💛' : 'Adnan 🖤';
+  other.img  = or === 'aloo' ? alooImg : adnanImg;
+  other.x = SPAWN[or].x; other.y = SPAWN[or].y;
+  other.online = true;
+
+  // Show game
+  document.getElementById('roomscr').classList.remove('on');
+  document.getElementById('gameWrap').classList.add('on');
+  document.getElementById('hud').classList.add('on');
+  document.getElementById('emotes').classList.add('on');
+
+  // Mobile vs desktop
+  const isMobile = 'ontouchstart' in window;
+  if(isMobile){ document.getElementById('joyWrap').classList.add('on'); initJoy(); }
+  else { document.getElementById('wasdHint').classList.add('on'); }
+
+  // HUD
+  document.getElementById('hdot').className = 'dot g';
+  document.getElementById('hstat').textContent = 'Connected 🖤';
+
+  // Music
+  const a = document.getElementById('bgAudio');
+  a.volume = 0.3;
+  a.play().then(()=>{ musicOn=true; document.querySelector('#hud .hud-icons .hicon').textContent='🔊'; }).catch(()=>{});
+
+  setupCanvas();
+  setupInput();
+  gameLoop();
+  setInterval(sendPos, 50);
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   CANVAS
+━━━━━━━━━━━━━━━━━━ */
+const canvas = document.getElementById('gc');
+const ctx = canvas.getContext('2d');
+
+function setupCanvas(){
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const sx = canvas.width / VW;
+    const sy = canvas.height / VH;
+    scale = Math.min(sx, sy);
+    offsetX = (canvas.width  - VW * scale) / 2;
+    offsetY = (canvas.height - VH * scale) / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   GAME LOOP
+━━━━━━━━━━━━━━━━━━ */
+let lastTime = 0;
+function gameLoop(ts=0){
+  const dt = Math.min((ts-lastTime)/16, 3); // delta frames, capped
+  lastTime = ts;
+  update(dt);
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   UPDATE
+━━━━━━━━━━━━━━━━━━ */
+const SPEED = 2.8;
+function update(dt){
+  if(me.sitting) return;
+
+  let dx = 0, dy = 0;
+  if(keys['ArrowLeft']||keys['a']||keys['A']) dx -= 1;
+  if(keys['ArrowRight']||keys['d']||keys['D']) dx += 1;
+  if(keys['ArrowUp']||keys['w']||keys['W'])   dy -= 1;
+  if(keys['ArrowDown']||keys['s']||keys['S']) dy += 1;
+  dx += joyDX; dy += joyDY;
+
+  // Normalize diagonal
+  const len = Math.sqrt(dx*dx+dy*dy);
+  if(len > 1){ dx/=len; dy/=len; }
+
+  const speed = SPEED * dt;
+  let nx = me.x + dx*speed;
+  let ny = me.y + dy*speed;
+
+  // Collision
+  if(!collides(nx, me.y)) me.x = Math.max(36, Math.min(VW-36, nx));
+  if(!collides(me.x, ny)) me.y = Math.max(46, Math.min(VH-32, ny));
+
+  // Facing direction
+  if(Math.abs(dx)>0.1||Math.abs(dy)>0.1){
+    me.moving = true;
+    if(Math.abs(dx)>Math.abs(dy)) me.facing = dx>0?'right':'left';
+    else me.facing = dy>0?'down':'up';
+  } else { me.moving = false; }
+
+  // Interaction detection
+  updatePrompt();
+}
+
+function collides(x, y){
+  const R = 18;
+  for(const o of OBSTACLES){
+    if(x+R>o.x && x-R<o.x+o.w && y+R>o.y && y-R<o.y+o.h) return true;
+  }
+  return false;
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   PROMPT / INTERACTION
+━━━━━━━━━━━━━━━━━━ */
+let nearSeat = null, bothAtTable = false;
+function updatePrompt(){
+  const prompt = document.getElementById('prompt');
+  const sitBtn = document.getElementById('sitBtn');
+  nearSeat = null;
+
+  // Check proximity to seats
+  for(const seat of ALL_SEATS){
+    const dx = me.x - seat.x, dy = me.y - seat.y;
+    if(Math.sqrt(dx*dx+dy*dy) < 60 && (seat.takenBy===null||seat.takenBy===myRole)){
+      nearSeat = seat; break;
+    }
+  }
+
+  if(nearSeat && !me.sitting){
+    prompt.style.display = 'block';
+    prompt.textContent = '🪑 Press E or tap Sit to sit down';
+    sitBtn.style.display = 'inline-flex'; sitBtn.textContent = '🪑 Sit';
+  } else if(me.sitting){
+    prompt.style.display = 'block';
+    prompt.textContent = '↑ Press E or tap Stand to get up';
+    sitBtn.style.display = 'inline-flex'; sitBtn.textContent = '⬆ Stand';
+  } else {
+    prompt.style.display = 'none';
+    sitBtn.style.display = 'none';
+  }
+
+  // Check both at table
+  const meAtTable = me.sitting && (me.sitSeat==='seat1'||me.sitSeat==='seat2');
+  const otherAtTable = other.sitting && (other.sitSeat==='seat1'||other.sitSeat==='seat2');
+  if(meAtTable && otherAtTable && !bothAtTable){
+    bothAtTable = true;
+    setTimeout(()=>{
+      document.getElementById('specialMoment').classList.add('on');
+    }, 800);
+  }
+  if(!(meAtTable && otherAtTable)) bothAtTable = false;
+
+  // Chat proximity
+  const pdx = me.x-other.x, pdy = me.y-other.y;
+  const dist = Math.sqrt(pdx*pdx+pdy*pdy);
+  if(dist < 200 || me.sitting){
+    document.getElementById('chatBox').classList.add('on');
+  } else {
+    document.getElementById('chatBox').classList.remove('on');
+  }
+}
+
+function interact(){
+  if(me.sitting){
+    standUp();
+  } else if(nearSeat){
+    sitDown(nearSeat);
+  }
+}
+
+function sitDown(seat){
+  me.sitting = true; me.sitSeat = seat.id;
+  seat.takenBy = myRole;
+  me.x = seat.x; me.y = seat.y;
+  me.facing = seat.facing;
+  sendPos();
+  if(conn&&conn.open) conn.send({type:'sit', seatId:seat.id, role:myRole});
+}
+
+function standUp(){
+  const seat = ALL_SEATS.find(s=>s.id===me.sitSeat);
+  if(seat) seat.takenBy = null;
+  me.sitting = false; me.sitSeat = null;
+  sendPos();
+  if(conn&&conn.open) conn.send({type:'stand', role:myRole});
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   RENDER
+━━━━━━━━━━━━━━━━━━ */
+let flameT = 0;
+function render(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+
+  drawRoom();
+  drawFurniture();
+
+  // Sort by Y so characters behind furniture look right
+  const chars = [{...me,isMe:true}, {...other,isMe:false}].sort((a,b)=>a.y-b.y);
+  chars.forEach(c => drawChar(c));
+
+  ctx.restore();
+  flameT += 0.06;
+}
+
+/* ── ROOM ── */
+function drawRoom(){
+  // Floor
+  const floorGrad = ctx.createRadialGradient(VW/2, VH*0.7, 0, VW/2, VH*0.7, VH*0.9);
+  floorGrad.addColorStop(0, '#1a0c06');
+  floorGrad.addColorStop(0.5, '#120804');
+  floorGrad.addColorStop(1, '#0a0504');
+  ctx.fillStyle = floorGrad; ctx.fillRect(0, 0, VW, VH);
+
+  // Floor wood planks
+  ctx.strokeStyle = 'rgba(255,200,100,0.04)'; ctx.lineWidth = 1;
+  for(let x = 0; x < VW; x += 45){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,VH); ctx.stroke(); }
+  for(let y = 0; y < VH; y += 45){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(VW,y); ctx.stroke(); }
+
+  // Wall (top)
+  const wallGrad = ctx.createLinearGradient(0,0,0,70);
+  wallGrad.addColorStop(0,'#0c0520'); wallGrad.addColorStop(1,'#080315');
+  ctx.fillStyle = wallGrad; ctx.fillRect(0,0,VW,60);
+  ctx.fillStyle='rgba(201,168,76,0.08)'; ctx.fillRect(0,58,VW,2);
+
+  // Wall left/right
+  ctx.fillStyle='#080318'; ctx.fillRect(0,0,35,VH); ctx.fillRect(VW-35,0,35,VH);
+
+  // Candle ambient glow (from table)
+  const cg = ctx.createRadialGradient(TABLE.x+TABLE.w/2, TABLE.y+TABLE.h/2, 0, TABLE.x+TABLE.w/2, TABLE.y+TABLE.h/2, 200);
+  cg.addColorStop(0,'rgba(230,140,20,0.22)'); cg.addColorStop(0.4,'rgba(180,90,10,0.08)'); cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg; ctx.fillRect(0,0,VW,VH);
+
+  // Moon window (top center)
+  const wx=VW/2-55, wy=2, ww=110, wh=70;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(wx+10,wy); ctx.lineTo(wx+ww-10,wy);
+  ctx.quadraticCurveTo(wx+ww,wy,wx+ww,wy+10);
+  ctx.lineTo(wx+ww,wy+wh); ctx.lineTo(wx,wy+wh); ctx.lineTo(wx,wy+10);
+  ctx.quadraticCurveTo(wx,wy,wx+10,wy);
+  ctx.closePath();
+  // Night sky fill
+  const sky=ctx.createLinearGradient(wx,wy,wx,wy+wh);
+  sky.addColorStop(0,'#050218'); sky.addColorStop(1,'#080330');
+  ctx.fillStyle=sky; ctx.fill();
+  // Window frame
+  ctx.strokeStyle='rgba(201,168,76,0.25)'; ctx.lineWidth=2; ctx.stroke();
+  // Stars in window
+  ctx.fillStyle='rgba(255,245,220,0.85)';
+  [[wx+18,wy+15],[wx+40,wy+8],[wx+60,wy+18],[wx+80,wy+10],[wx+25,wy+35],[wx+70,wy+32],[wx+90,wy+25],[wx+50,wy+48],[wx+35,wy+55]].forEach(([sx,sy])=>{
+    ctx.beginPath(); ctx.arc(sx,sy,Math.random()<0.01?1.5:0.8+Math.abs(Math.sin(flameT*0.5+sx))*0.5,0,Math.PI*2); ctx.fill();
+  });
+  // Moon crescent
+  ctx.fillStyle='rgba(240,225,180,0.9)'; ctx.beginPath(); ctx.arc(wx+ww-22,wy+18,12,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#060220'; ctx.beginPath(); ctx.arc(wx+ww-17,wy+15,10,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Curtains
+  drawCurtain(wx-12, wy, 18, wh+8);
+  drawCurtain(wx+ww-6, wy, 18, wh+8);
+
+  // Plants in corners
+  drawPlant(50, VH-80);
+  drawPlant(VW-70, VH-80);
+  drawPlant(50, 100);
+  drawPlant(VW-70, 100);
+
+  // Rug under table
+  ctx.save();
+  ctx.globalAlpha=0.25;
+  const rug=ctx.createRadialGradient(TABLE.x+TABLE.w/2,TABLE.y+TABLE.h/2,0,TABLE.x+TABLE.w/2,TABLE.y+TABLE.h/2,130);
+  rug.addColorStop(0,'#8B2252'); rug.addColorStop(0.6,'#5a0a30'); rug.addColorStop(1,'transparent');
+  ctx.fillStyle=rug; ctx.beginPath(); ctx.ellipse(TABLE.x+TABLE.w/2,TABLE.y+TABLE.h/2,130,90,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawCurtain(x,y,w,h){
+  ctx.fillStyle='#1a0818'; ctx.beginPath();
+  ctx.moveTo(x,y); ctx.lineTo(x+w,y); ctx.lineTo(x+w*0.6,y+h*0.5); ctx.lineTo(x+w,y+h); ctx.lineTo(x,y+h); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(201,168,76,0.1)'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawPlant(x,y){
+  // Pot
+  ctx.fillStyle='#3a2010';
+  ctx.beginPath(); ctx.moveTo(x-10,y); ctx.lineTo(x+10,y); ctx.lineTo(x+7,y+18); ctx.lineTo(x-7,y+18); ctx.closePath(); ctx.fill();
+  // Leaves
+  ctx.fillStyle='#1a4010';
+  [[0,-22],[12,-15],[-12,-15],[8,-30],[-8,-30]].forEach(([dx,dy])=>{
+    ctx.beginPath(); ctx.ellipse(x+dx,y+dy,6,10,dx*0.1,0,Math.PI*2); ctx.fill();
+  });
+}
+
+/* ── FURNITURE ── */
+function drawFurniture(){
+  // SOFA
+  drawSofa();
+  // DINING TABLE
+  drawDiningTable();
+}
+
+function drawSofa(){
+  const {x,y,w,h} = SOFA;
+  // Back
+  ctx.fillStyle='#2a1035'; ctx.beginPath(); ctx.roundRect(x,y,w,h*0.55,6); ctx.fill();
+  ctx.strokeStyle='rgba(201,168,76,0.15)'; ctx.lineWidth=1; ctx.stroke();
+  // Seat
+  ctx.fillStyle='#3a1848'; ctx.beginPath(); ctx.roundRect(x,y+h*0.45,w,h*0.55,4); ctx.fill();
+  // Cushion lines
+  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w/2,y+h); ctx.stroke();
+  // Arms
+  ctx.fillStyle='#220c28';
+  ctx.beginPath(); ctx.roundRect(x-8,y,10,h,4); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(x+w-2,y,10,h,4); ctx.fill();
+  // Label
+  ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.font='10px Cormorant Garamond,serif'; ctx.textAlign='center';
+  ctx.fillText('🛋️', x+w/2, y+h/2+4);
+}
+
+function drawDiningTable(){
+  const cx=TABLE.x+TABLE.w/2, cy=TABLE.y+TABLE.h/2;
+  const rx=TABLE.w/2+10, ry=TABLE.h/2+8;
+
+  // Table shadow
+  ctx.fillStyle='rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(cx,cy+10,rx+8,ry+4,0,0,Math.PI*2); ctx.fill();
+
+  // Table top
+  const tg=ctx.createRadialGradient(cx,cy-10,0,cx,cy,rx);
+  tg.addColorStop(0,'#6b3c12'); tg.addColorStop(0.7,'#4a2808'); tg.addColorStop(1,'#3a1e06');
+  ctx.fillStyle=tg; ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.fill();
+
+  // Table cloth
+  const tcg=ctx.createRadialGradient(cx,cy,0,cx,cy,rx-8);
+  tcg.addColorStop(0,'#2a0a1a'); tcg.addColorStop(1,'#1a0610');
+  ctx.fillStyle=tcg; ctx.beginPath(); ctx.ellipse(cx,cy,rx-8,ry-6,0,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(201,168,76,0.2)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.ellipse(cx,cy,rx-8,ry-6,0,0,Math.PI*2); ctx.stroke();
+
+  // Plates
+  [[cx-28,cy+5],[cx+28,cy+5]].forEach(([px,py])=>{
+    ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.beginPath(); ctx.arc(px,py,14,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.beginPath(); ctx.arc(px,py,10,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(px,py,14,0,Math.PI*2); ctx.stroke();
+  });
+
+  // Rose
+  ctx.font='16px serif'; ctx.textAlign='center'; ctx.fillStyle='#fff';
+  ctx.fillText('🌹',cx,cy-4);
+
+  // Candles (left & right of rose)
+  drawTableCandle(cx-18, cy-20);
+  drawTableCandle(cx+18, cy-20);
+
+  // Chairs
+  drawChair(SEATS[0]);
+  drawChair(SEATS[1]);
+}
+
+function drawTableCandle(x,y){
+  // Wax
+  ctx.fillStyle='#d8b870'; ctx.beginPath(); ctx.roundRect(x-4,y+4,8,18,2); ctx.fill();
+  // Wick
+  ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x,y+4); ctx.lineTo(x,y+2); ctx.stroke();
+  // Flame
+  const flicker = Math.sin(flameT*2.5+x)*0.15;
+  const fg=ctx.createRadialGradient(x,y-2,0,x,y,8+flicker*3);
+  fg.addColorStop(0,'rgba(255,252,220,1)'); fg.addColorStop(0.3,'rgba(255,190,40,0.9)'); fg.addColorStop(1,'transparent');
+  ctx.fillStyle=fg;
+  ctx.beginPath(); ctx.ellipse(x+flicker,y-4,3+flicker,7,flicker*0.3,0,Math.PI*2); ctx.fill();
+  // Glow
+  const gg=ctx.createRadialGradient(x,y,0,x,y,20+Math.sin(flameT*2)*3);
+  gg.addColorStop(0,'rgba(255,170,30,0.15)'); gg.addColorStop(1,'transparent');
+  ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(x,y,25,0,Math.PI*2); ctx.fill();
+}
+
+function drawChair(seat){
+  ctx.fillStyle='rgba(80,40,15,0.7)';
+  ctx.strokeStyle='rgba(201,168,76,0.2)'; ctx.lineWidth=1;
+  if(seat.facing==='down'){
+    ctx.beginPath(); ctx.roundRect(seat.x-20,seat.y-30,40,10,3); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(seat.x-18,seat.y-20,36,18,3); ctx.fill(); ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.roundRect(seat.x-20,seat.y+22,40,10,3); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(seat.x-18,seat.y+2,36,18,3); ctx.fill(); ctx.stroke();
+  }
+}
+
+/* ── CHARACTERS ── */
+function drawChar(c){
+  if(!c.online && !c.isMe) return;
+  const {x, y, img, role, name, sitting, facing, moving, chatMsg, emote, isMe} = c;
+
+  const R = 24; // avatar radius
+  const color = role==='aloo'?'#B85A78':'#C9A84C';
+
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.28)';
+  ctx.beginPath(); ctx.ellipse(x,y+R+2,R-4,6,0,0,Math.PI*2); ctx.fill();
+
+  // Sitting indicator
+  if(sitting){
+    ctx.fillStyle='rgba(0,0,0,0.3)';
+    ctx.beginPath(); ctx.roundRect(x-R-4,y-R-4,R*2+8,R*2+8,6); ctx.fill();
+  }
+
+  // Bob animation when walking
+  const bob = (moving && !sitting) ? Math.sin(Date.now()*0.015)*2 : 0;
+
+  // Draw circular avatar
+  if(img && img.complete && img.naturalWidth){
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x, y+bob, R, 0, Math.PI*2); ctx.clip();
+    ctx.drawImage(img, x-R, y+bob-R, R*2, R*2);
+    ctx.restore();
+  } else {
+    // Fallback colored circle
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(x, y+bob, R, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Ring
+  const ringColor = isMe ? color : (color+'aa');
+  ctx.strokeStyle = ringColor; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(x, y+bob, R, 0, Math.PI*2); ctx.stroke();
+
+  // "Me" indicator
+  if(isMe){
+    ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x+R-6, y+bob-R+6, 5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 6px sans-serif'; ctx.textAlign='center'; ctx.fillText('ME',x+R-6,y+bob-R+8);
+  }
+
+  // Name tag
+  ctx.font = 'bold 12px Dancing Script, cursive';
+  const tw = ctx.measureText(name).width;
+  ctx.fillStyle='rgba(0,0,0,0.72)';
+  ctx.beginPath(); ctx.roundRect(x-tw/2-6, y+R+bob+5, tw+12, 17, 5); ctx.fill();
+  ctx.fillStyle = color==='#B85A78'?'#E8A0B4':'#E8D5A3';
+  ctx.textAlign='center'; ctx.fillText(name, x, y+R+bob+16);
+
+  // Chat bubble
+  if(chatMsg){
+    drawBubble(x, y+bob-R-10, chatMsg, color);
+  }
+
+  // Emote
+  if(emote){
+    ctx.font = '20px serif'; ctx.textAlign='center';
+    ctx.fillText(emote, x+R, y+bob-R-5);
+  }
+}
+
+function drawBubble(x, y, text, color){
+  ctx.font='11px Cormorant Garamond,serif';
+  const maxW = 160;
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  for(const w of words){
+    const test = cur ? cur+' '+w : w;
+    if(ctx.measureText(test).width > maxW-16){ lines.push(cur); cur=w; }
+    else cur=test;
+  }
+  if(cur) lines.push(cur);
+
+  const bw = Math.min(maxW, Math.max(...lines.map(l=>ctx.measureText(l).width))+20);
+  const bh = lines.length*15+14;
+  const bx = x-bw/2, by = y-bh-14;
+
+  // Box
+  ctx.fillStyle='rgba(255,252,245,0.97)';
+  ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 10); ctx.fill();
+  ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.stroke();
+
+  // Tail
+  ctx.fillStyle='rgba(255,252,245,0.97)';
+  ctx.beginPath(); ctx.moveTo(x-7,by+bh); ctx.lineTo(x,by+bh+12); ctx.lineTo(x+7,by+bh); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x-7,by+bh); ctx.lineTo(x,by+bh+12); ctx.lineTo(x+7,by+bh); ctx.stroke();
+
+  // Text
+  ctx.fillStyle='#1a0808'; ctx.textAlign='center';
+  lines.forEach((line,i)=>{ ctx.fillText(line, x, by+16+i*15); });
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   INPUT
+━━━━━━━━━━━━━━━━━━ */
+function setupInput(){
+  window.addEventListener('keydown', e=>{
+    keys[e.key] = true;
+    if(e.key==='e'||e.key==='E') interact();
+    if((e.key==='t'||e.key==='T') && !e.ctrlKey){ e.preventDefault(); document.getElementById('chatIn').focus(); }
+    if(e.key==='Escape') document.getElementById('chatIn').blur();
+  });
+  window.addEventListener('keyup', e=>{ keys[e.key]=false; });
+
+  document.getElementById('chatIn').addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); sendChat(); }
+    e.stopPropagation();
+  });
+
+  // Canvas tap to interact
+  canvas.addEventListener('click', e=>{
+    const vx = (e.clientX - offsetX)/scale;
+    const vy = (e.clientY - offsetY)/scale;
+    // Tap on a seat
+    for(const seat of ALL_SEATS){
+      const dx=vx-seat.x, dy=vy-seat.y;
+      if(Math.sqrt(dx*dx+dy*dy)<45){
+        if(!me.sitting && (seat.takenBy===null||seat.takenBy===myRole)){ sitDown(seat); return; }
+      }
+    }
+  });
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   MOBILE JOYSTICK
+━━━━━━━━━━━━━━━━━━ */
+function initJoy(){
+  const wrap = document.getElementById('joyWrap');
+  const knob = document.getElementById('joyKnob');
+  const maxR = 33;
+  let startX=0, startY=0, touchId=null;
+
+  function startTouch(e){
+    if(touchId!==null) return;
+    const t = e.changedTouches[0];
+    const r = wrap.getBoundingClientRect();
+    if(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom) return;
+    e.preventDefault();
+    touchId=t.identifier; startX=r.left+r.width/2; startY=r.top+r.height/2;
+    joyActive=true;
+  }
+  function moveTouch(e){
+    if(touchId===null) return;
+    e.preventDefault();
+    for(const t of e.changedTouches){
+      if(t.identifier!==touchId) continue;
+      const dx=t.clientX-startX, dy=t.clientY-startY;
+      const len=Math.sqrt(dx*dx+dy*dy);
+      const clamp=Math.min(len,maxR);
+      const angle=Math.atan2(dy,dx);
+      const kx=Math.cos(angle)*clamp, ky=Math.sin(angle)*clamp;
+      knob.style.transform=`translate(calc(-50% + ${kx}px), calc(-50% + ${ky}px))`;
+      joyDX=dx/Math.max(len,1)*(len>8?1:0);
+      joyDY=dy/Math.max(len,1)*(len>8?1:0);
+    }
+  }
+  function endTouch(e){
+    for(const t of e.changedTouches){
+      if(t.identifier===touchId){
+        touchId=null; joyDX=0; joyDY=0; joyActive=false;
+        knob.style.transform='translate(-50%,-50%)';
+      }
+    }
+  }
+  wrap.addEventListener('touchstart',startTouch,{passive:false});
+  window.addEventListener('touchmove',moveTouch,{passive:false});
+  window.addEventListener('touchend',endTouch,{passive:false});
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   CHAT & EMOTES
+━━━━━━━━━━━━━━━━━━ */
+function sendChat(){
+  const inp=document.getElementById('chatIn');
+  const text=inp.value.trim();
+  if(!text) return;
+  inp.value='';
+  setChat(me, text);
+  if(conn&&conn.open) conn.send({type:'chat', text});
+}
+
+function sendEmote(e){
+  setEmote(me, e);
+  if(conn&&conn.open) conn.send({type:'emote', e});
+}
+
+function setChat(char, text){
+  char.chatMsg = text;
+  if(char.chatTimer) clearTimeout(char.chatTimer);
+  char.chatTimer = setTimeout(()=>{ char.chatMsg=''; }, 9000);
+}
+
+function setEmote(char, e){
+  char.emote = e;
+  if(char.emoteTimer) clearTimeout(char.emoteTimer);
+  char.emoteTimer = setTimeout(()=>{ char.emote=''; }, 4000);
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   MULTIPLAYER
+━━━━━━━━━━━━━━━━━━ */
+function sendPos(){
+  if(!conn||!conn.open) return;
+  conn.send({type:'pos', x:me.x, y:me.y, facing:me.facing, sitting:me.sitting, sitSeat:me.sitSeat});
+}
+
+function onData(data){
+  switch(data.type){
+    case 'hello':
+      other.role=data.role;
+      other.name=data.role==='aloo'?'Aloo 💛':'Adnan 🖤';
+      other.img=data.role==='aloo'?alooImg:adnanImg;
+      other.online=true;
+      other.x=SPAWN[data.role].x; other.y=SPAWN[data.role].y;
+      break;
+    case 'pos':
+      other.x=data.x; other.y=data.y;
+      other.facing=data.facing; other.sitting=data.sitting;
+      other.sitSeat=data.sitSeat;
+      break;
+    case 'chat':
+      setChat(other, data.text);
+      pingSound();
+      break;
+    case 'emote':
+      setEmote(other, data.e);
+      break;
+    case 'sit':
+      const s=ALL_SEATS.find(s=>s.id===data.seatId);
+      if(s) s.takenBy=data.role;
+      other.sitting=true; other.sitSeat=data.seatId;
+      break;
+    case 'stand':
+      const ss=ALL_SEATS.find(s=>s.takenBy===data.role);
+      if(ss) ss.takenBy=null;
+      other.sitting=false; other.sitSeat=null;
+      break;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   UTILS
+━━━━━━━━━━━━━━━━━━ */
+function toggleMusic(){
+  const a=document.getElementById('bgAudio'),b=document.querySelector('#hud .hud-icons .hicon');
+  a.paused?a.play().then(()=>{musicOn=true;b.textContent='🔊'}).catch(()={}):(a.pause(),musicOn=false,b.textContent='♪');
+}
+
+function pingSound(){
+  try{
+    const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.frequency.value=880;o.type='sine';
+    g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(0.1,c.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.5);o.start();o.stop(c.currentTime+0.5);
+  }catch(e){}
+}
+
+function copyC(){
+  const c=document.getElementById('codeVal').textContent;
+  navigator.clipboard.writeText(c).catch(()=>{});
+  event.currentTarget.textContent='✓ Copied!';
+  setTimeout(()=>event.currentTarget.textContent='📋 Copy',2000);
+}
+
+function waC(){
+  const c=document.getElementById('codeVal').textContent;
+  const m=encodeURIComponent('Aloo, join our little virtual world! 🌟\n\nOpen this link:\nhttps://adnantamboli.github.io/alfiya-universe/gather-date.html\n\nRoom code:\n'+c+'\n\n🖤');
+  window.open('https://wa.me/?text='+m,'_blank');
+}
+</script>
+</body>
+</html>
